@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any, Dict, List,Optional, Type, TypeVar 
 
 from pydantic import BaseModel, Field, create_model
 
@@ -118,6 +118,9 @@ class PydanticModelBuilder(IModelBuilder[T]):
             )
 
         # Handle nested objects by recursively creating models
+        if field_schema.get("type") == "array":
+            return List[self._get_field_type(field_schema["items"], root_schema, allow_undefined_array_items)]
+
         if field_schema.get("type") == "object" and "properties" in field_schema:
             return self.create_pydantic_model(
                 field_schema, root_schema, allow_undefined_array_items
